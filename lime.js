@@ -12,7 +12,7 @@ function Lime() {
 
       return text;
     }();
-    lTimer.getRequestQueue().addObject(request);
+    this.timer.getRequestQueue().addObject(request);
   }
   function addRoute(route) {
     for(var x = 0; x < this.routes.length; x++) {
@@ -29,7 +29,7 @@ function LimeTimer() {
   this.init = function() {
     this.requestQueue = new this.Queue();
     this.responseQueue = new this.Queue();
-    lime = this;
+    var lime = this;
     this.threadId = setInterval(function() {lime.run(lime.requestQueue);}, 50);
     return this;
   },

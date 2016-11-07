@@ -1,27 +1,28 @@
-routes = [];
-var lTimer = new LimeTimer();
-lTimer.init();
-function doRequest(key, data, priority = 1) {
-  var request = new LimeRequest(key, data, priority);
-  request.id = function() {
-    var text = "";
-    var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
+function Lime() {
+  this.routes = [];
+  this.timer = new LimeTimer().init();
+  this.doRequest = function(key, data, priority = 1) {
+    var request = new LimeRequest(key, data, priority);
+    request.id = function() {
+      var text = "";
+      var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
 
-    while(text.length < 6)
-      text += chars.charAt(Math.floor(Math.random() * chars.length));
+      while(text.length < 6)
+        text += chars.charAt(Math.floor(Math.random() * chars.length));
 
-    return text;
-  }();
-  lTimer.getRequestQueue().addObject(request);
-}
-function addRoute(route) {
-  for(var x = 0; x < routes.length; x++) {
-    if(routes[x].key != route.key) {
-      return null;
-    }
+      return text;
+    }();
+    lTimer.getRequestQueue().addObject(request);
   }
-  routes[routes.length] = route;
-  return route;
+  function addRoute(route) {
+    for(var x = 0; x < this.routes.length; x++) {
+      if(this.routes[x].key != route.key) {
+        return null;
+      }
+    }
+    this.routes[this.routes.length] = route;
+    return route;
+  }
 }
 
 function LimeTimer() {
@@ -30,6 +31,7 @@ function LimeTimer() {
     this.responseQueue = new this.Queue();
     lime = this;
     this.threadId = setInterval(function() {lime.run(lime.requestQueue);}, 50);
+    return this;
   },
   this.run = function(requestQueue) {
     var request = requestQueue.get(0);

@@ -2,25 +2,17 @@ routes = [];
 var lTimer = new LimeTimer();
 lTimer.init();
 function doRequest(key, data, priority = 1) {
-  var id = generateRandomId(5);
   var request = new LimeRequest(key, data, priority);
-  request.id = id;
+  request.id = function() {
+    var text = "";
+    var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
+
+    while(text.length < 6)
+      text += chars.charAt(Math.floor(Math.random() * chars.length));
+
+    return text;
+  }();
   lTimer.getRequestQueue().addObject(request);
-}
-function getResponseById(id) {
-  return lTimer.getResponseQueue.getResponseById(id);
-}
-function getResponseByKey(key) {
-  return lTimer.getResponseQueue.getResponseByKey(key);
-}
-function generateRandomId(length) {
-  var text = "";
-  var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
-
-  while(text.length < length)
-    text += chars.charAt(Math.floor(Math.random() * chars.length));
-
-  return text;
 }
 function addRoute(route) {
   for(var x = 0; x < routes.length; x++) {
@@ -62,15 +54,6 @@ function LimeTimer() {
     }
     return null;
   },
-  this.getResponsesByKey = function(key) {
-    var responses = this.responseQueue.getObjectsByKey(key);
-    if(responses != undefined && requests != null) {
-      if(responses.length == 1)
-        return responses[0];
-      return responses;
-    }
-    return null;
-  },
   this.getRequestById = function(id) {
     var requests = this.requestQueue.getObjectsById(id);
     if(requests != undefined && requests != null) {
@@ -80,20 +63,8 @@ function LimeTimer() {
     }
     return null;
   },
-  this.getResponsesById = function(id) {
-    var responses = this.responseQueue.getObjectsById(id);
-    if(responses != undefined && requests != null) {
-      if(responses.length == 1)
-        return responses[0];
-      return responses;
-    }
-    return null;
-  },
   this.getRequestQueue = function() {
     return this.requestQueue;
-  },
-  this.getResponseQueue = function() {
-    return this.responseQueue;
   };
   this.Queue = function() {
     this.objects = [];
@@ -134,8 +105,8 @@ var LimeRoute = function(key, url, handler, errorHandler = null) {
   this.handler = handler;
   this.errorHandler = errorHandler;
   this.handle = function(request) {
-    _limeHandler = this.handler;
-    _limeErrorHandler = this.errorHandler;
+    var _limeHandler = this.handler;
+    var _limeErrorHandler = this.errorHandler;
     if(this.canHandle(request)) {
       $.ajax({
         url: this.url,

@@ -45,16 +45,8 @@ function LimeTimer() {
       for(var x = 0; x < routes.length; x++) {
         var route = routes[x];
         requestQueue.removeObject(0);
-        if(route.canHandle(request)) {
-          var success = route.handle(request);
-          if(success) {
-
-          } else {
-            console.log("Failed to obtain response for request:");
-            console.log(request);
-            console.log(" ");
-          }
-        }
+        if(route.canHandle(request))
+          route.handle(request);
       }
     }
   },
@@ -152,12 +144,10 @@ var LimeRoute = function(key, url, handler, errorHandler = null) {
           var response = new LimeResponse(request.key, data);
           response.id = request.id;
           _limeHandler(response);
-          return true;
         },
         error: function(jqXHR, textStatus, errorThrown) {
           if(_limeErrorHandler != null)
             _limeErrorHandler(jqXHR, textStatus, errorThrown);
-          return false;
         }
       });
       request.setHandled(true);
@@ -175,26 +165,6 @@ var LimeRequest = function(key, data, priority = 1) {
   this.key = key;
   this.data = data;
   this.priority = priority;
-  this.getKey = function() {
-    return this.key;
-  },
-  this.getData = function() {
-    return this.data;
-  },
-  this.getData = function(key) {
-    if(this.data == null || this.data == undefined)
-      return null;
-    for(var x = 0; x < this.data.length; x++) {
-      if(this.data[x] == key) {
-        return this.data[x];
-      }
-    }
-  }
-}
-
-var LimeResponse = function(key, data) {
-  this.key = key;
-  this.data = data;
   this.handled = false;
   this.getKey = function() {
     return this.key;
@@ -216,5 +186,25 @@ var LimeResponse = function(key, data) {
   },
   this.isHandled = function() {
     return this.handled;
+  }
+}
+
+var LimeResponse = function(key, data) {
+  this.key = key;
+  this.data = data;
+  this.getKey = function() {
+    return this.key;
+  },
+  this.getData = function() {
+    return this.data;
+  },
+  this.getData = function(key) {
+    if(this.data == null || this.data == undefined)
+      return null;
+    for(var x = 0; x < this.data.length; x++) {
+      if(this.data[x] == key) {
+        return this.data[x];
+      }
+    }
   }
 }

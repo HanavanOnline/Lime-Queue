@@ -1,6 +1,6 @@
 function Lime() {
   this.routes = [];
-  this.timer = new LimeTimer().init();
+  this.timer = new LimeTimer(this).init();
   this.doRequest = function(key, data, priority = 1) {
     var request = new LimeRequest(key, data, priority);
     request.id = function() {
@@ -14,7 +14,7 @@ function Lime() {
     }();
     this.timer.getRequestQueue().addObject(request);
   }
-  function addRoute(route) {
+  this.addRoute = function(route) {
     for(var x = 0; x < this.routes.length; x++) {
       if(this.routes[x].key != route.key) {
         return null;
@@ -25,19 +25,20 @@ function Lime() {
   }
 }
 
-function LimeTimer() {
+function LimeTimer(lime) {
+  this.lime = lime;
   this.init = function() {
     this.requestQueue = new this.Queue();
     this.responseQueue = new this.Queue();
-    var lime = this;
-    this.threadId = setInterval(function() {lime.run(lime.requestQueue);}, 50);
+    var timer = this;
+    this.threadId = setInterval(function() {timer.run(timer.requestQueue);}, 50);
     return this;
   },
   this.run = function(requestQueue) {
     var request = requestQueue.get(0);
     if(request != undefined) {
-      for(var x = 0; x < routes.length; x++) {
-        var route = routes[x];
+      for(var x = 0; x < this.lime.routes.length; x++) {
+        var route = this.lime.routes[x];
         requestQueue.removeObject(0);
         if(route.canHandle(request))
           route.handle(request);

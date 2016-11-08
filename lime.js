@@ -13,6 +13,7 @@ function Lime() {
       return text;
     }();
     this.timer.getRequestQueue().addObject(request);
+    return request;
   }
   this.addRoute = function(route) {
     for(var x = 0; x < this.routes.length; x++) {

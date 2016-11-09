@@ -33,7 +33,9 @@ function LimeTimer(lime) {
     this.requestQueue = new this.Queue();
     this.responseQueue = new this.Queue();
     var timer = this;
-    this.threadId = setInterval(function() {timer.run(timer.requestQueue);}, 50);
+    var f = timer.run;
+
+    this.threadId = setInterval(timer.run.bind(timer, timer.requestQueue), 50);
     return this;
   },
   this.run = function(requestQueue) {

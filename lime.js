@@ -1,6 +1,6 @@
-function Lime() {
+function Lime(interval = 50) {
   this.routes = [];
-  this.timer = new LimeTimer(this).init();
+  this.timer = new LimeTimer(this).init(interval);
   this.doRequest = function(key, data, priority = 1) {
     var request = new LimeRequest(key, data, priority);
     request.id = function() {
@@ -29,13 +29,13 @@ function Lime() {
 
 function LimeTimer(lime) {
   this.lime = lime;
-  this.init = function() {
+  this.init = function(interval) {
     this.requestQueue = new this.Queue();
     this.responseQueue = new this.Queue();
     var timer = this;
     var f = timer.run;
 
-    this.threadId = setInterval(timer.run.bind(timer, timer.requestQueue), 50);
+    this.threadId = setInterval(timer.run.bind(timer, timer.requestQueue), interval);
     return this;
   },
   this.run = function(requestQueue) {

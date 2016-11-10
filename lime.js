@@ -122,7 +122,7 @@ var LimeMonitor = function(key, interval, handler, dataHandler, errorHandler = n
       url: this.url,
       data: request.data,
       success: function(data) {
-        var response = new LimeResponse(request.key, data);
+        var response = new LimeResponse(request.key, data, request);
         response.id = request.id;
         handler(response);
       },
@@ -151,7 +151,7 @@ var LimeRoute = function(key, url, handler, errorHandler = null, options = {}) {
         url: this.url,
         data: request.data,
         success: function(data) {
-          var response = new LimeResponse(request.key, data);
+          var response = new LimeResponse(request.key, data, request);
           response.id = request.id;
           _limeHandler(response);
         },
@@ -199,9 +199,10 @@ var LimeRequest = function(key, data = "", options = {}) {
   }
 }
 
-var LimeResponse = function(key, data, options = {}) {
+var LimeResponse = function(key, data, request, options = {}) {
   this.key = key;
   this.data = data;
+  this.request = request;
   this.getKey = function() {
     return this.key;
   },

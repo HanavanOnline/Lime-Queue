@@ -143,6 +143,9 @@ var LimeRoute = function(key, url, handler, errorHandler = null, options = {}) {
   this.handle = function(request) {
     var _limeHandler = this.handler;
     var _limeErrorHandler = this.errorHandler;
+    var data = request.data;
+    if(typeof data == "function")
+      data = data();
     if(this.canHandle(request)) {
       $.ajax({
         url: this.url,

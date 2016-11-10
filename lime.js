@@ -107,34 +107,6 @@ function LimeTimer(lime) {
   };
 }
 
-var LimeMonitor = function(key, interval, handler, dataHandler, errorHandler = null, options = {}) {
-  this.key = key;
-  this.inteval = interval;
-  this.handler = handler;
-  this.dataHandler = dataHandler;
-  this.errorHandler = errorHandler;
-  this.options = options;
-  this.handle = function() {
-    var handler = this.handler;
-    var errorHandler = this.errorHandler;
-    var request = lime.doRequest(this.key, dataHandler());
-    $.ajax({
-      url: this.url,
-      data: request.data,
-      success: function(data) {
-        var response = new LimeResponse(request.key, data, request);
-        response.id = request.id;
-        handler(response);
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        if(errorHandler != null)
-          errorHandler(jqXHR, textStatus, errorThrown);
-      }
-    });
-    request.setHandled(true);
-  }
-}
-
 var LimeRoute = function(key, url, handler, errorHandler = null, options = {}) {
   this.key = key;
   this.url = url;

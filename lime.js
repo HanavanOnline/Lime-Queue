@@ -115,12 +115,15 @@ var LimeRoute = function(key, url, handler, errorHandler = null, options = {}) {
   this.handle = function(request) {
     var _limeHandler = this.handler;
     var _limeErrorHandler = this.errorHandler;
+    var url = this.url;
+    if(typeof url == "function")
+      url = url();
     var data = request.data;
     if(typeof data == "function")
       data = data();
     if(this.canHandle(request)) {
       $.ajax({
-        url: this.url,
+        url: url,
         data: request.data,
         success: function(data) {
           var response = new LimeResponse(request.key, data, request);

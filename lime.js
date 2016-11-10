@@ -2,8 +2,8 @@ function Lime(interval = 50) {
   this.version = "v1.0.13";
   this.routes = [];
   this.timer = new LimeTimer(this).init(interval);
-  this.doRequest = function(key, data, priority = 1) {
-    var request = new LimeRequest(key, data, priority);
+  this.doRequest = function(key, data, options = {}) {
+    var request = new LimeRequest(key, data, options.priority);
     request.id = function() {
       var text = "";
       var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
@@ -107,7 +107,35 @@ function LimeTimer(lime) {
   };
 }
 
-var LimeRoute = function(key, url, handler, errorHandler = null) {
+var LimeMonitor = function(key, interval, handler, dataHandler, errorHandler = null, options = {}) {
+  this.key = key;
+  this.inteval = interval;
+  this.handler = handler;
+  this.dataHandler = dataHandler;
+  this.errorHandler = errorHandler;
+  this.options = options;
+  this.handle = function() {
+    var handler = this.handler;
+    var errorHandler = this.errorHandler;
+    var request = lime.doRequest(this.key, dataHandler());
+    $.ajax({
+      url: this.url,
+      data: request.data,
+      success: function(data) {
+        var response = new LimeResponse(request.key, data);
+        response.id = request.id;
+        handler(response);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        if(errorHandler != null)
+          errorHandler(jqXHR, textStatus, errorThrown);
+      }
+    });
+    request.setHandled(true);
+  }
+}
+
+var LimeRoute = function(key, url, handler, errorHandler = null, options = {}) {
   this.key = key;
   this.url = url;
   this.handler = handler;
@@ -140,10 +168,10 @@ var LimeRoute = function(key, url, handler, errorHandler = null) {
   }
 }
 
-var LimeRequest = function(key, data, priority = 1) {
+var LimeRequest = function(key, data, options = {}) {
   this.key = key;
   this.data = data;
-  this.priority = priority;
+  this.priority = options.priority;
   this.handled = false;
   this.getKey = function() {
     return this.key;
@@ -168,7 +196,7 @@ var LimeRequest = function(key, data, priority = 1) {
   }
 }
 
-var LimeResponse = function(key, data) {
+var LimeResponse = function(key, data, options = {}) {
   this.key = key;
   this.data = data;
   this.getKey = function() {

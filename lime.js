@@ -2,7 +2,7 @@ function Lime(interval = 50) {
   this.version = "v1.0.13";
   this.routes = [];
   this.timer = new LimeTimer(this).init(interval);
-  this.doRequest = function(key, data, options = {}) {
+  this.doRequest = function(key, data = "", options = {}) {
     var request = new LimeRequest(key, data, options.priority);
     request.id = function() {
       var text = "";
@@ -168,7 +168,7 @@ var LimeRoute = function(key, url, handler, errorHandler = null, options = {}) {
   }
 }
 
-var LimeRequest = function(key, data, options = {}) {
+var LimeRequest = function(key, data = "", options = {}) {
   this.key = key;
   this.data = data;
   this.priority = options.priority;

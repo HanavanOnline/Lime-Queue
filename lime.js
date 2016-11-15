@@ -13,6 +13,9 @@ function Lime(interval = 50) {
 
       return text;
     }();
+    if(options.id != undefined) {
+      request.id = options.id;
+    }
     this.timer.getRequestQueue().addObject(request);
     return request;
   }

@@ -1,8 +1,9 @@
-function Lime() {
+function Lime(interval = 50) {
+  this.version = "v1.1.0";
   this.routes = [];
-  this.timer = new LimeTimer(this).init();
-  this.doRequest = function(key, data, priority = 1) {
-    var request = new LimeRequest(key, data, priority);
+  this.timer = new LimeTimer(this).init(interval);
+  this.doRequest = function(key, data = "", options = {}) {
+    var request = new LimeRequest(key, data, options.priority);
     request.id = function() {
       var text = "";
       var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
@@ -12,6 +13,9 @@ function Lime() {
 
       return text;
     }();
+    if(options.id != undefined) {
+      request.id = options.id;
+    }
     this.timer.getRequestQueue().addObject(request);
     return request;
   }
@@ -29,11 +33,13 @@ function Lime() {
 
 function LimeTimer(lime) {
   this.lime = lime;
-  this.init = function() {
+  this.init = function(interval) {
     this.requestQueue = new this.Queue();
     this.responseQueue = new this.Queue();
     var timer = this;
-    this.threadId = setInterval(function() {timer.run(timer.requestQueue);}, 50);
+    var f = timer.run;
+
+    this.threadId = setInterval(timer.run.bind(timer, timer.requestQueue), interval);
     return this;
   },
   this.run = function(requestQueue) {
@@ -104,7 +110,7 @@ function LimeTimer(lime) {
   };
 }
 
-var LimeRoute = function(key, url, handler, errorHandler = null) {
+var LimeRoute = function(key, url, handler, errorHandler = null, options = {}) {
   this.key = key;
   this.url = url;
   this.handler = handler;
@@ -112,12 +118,20 @@ var LimeRoute = function(key, url, handler, errorHandler = null) {
   this.handle = function(request) {
     var _limeHandler = this.handler;
     var _limeErrorHandler = this.errorHandler;
+    var data = request.data;
+    if(typeof data == "function"){
+      data = data();
+      request.data = data;
+    }
+    var url = this.url;
+    if(typeof url == "function")
+      url = url(request);
     if(this.canHandle(request)) {
       $.ajax({
-        url: this.url,
+        url: url,
         data: request.data,
         success: function(data) {
-          var response = new LimeResponse(request.key, data);
+          var response = new LimeResponse(request.key, data, request);
           response.id = request.id;
           _limeHandler(response);
         },
@@ -137,10 +151,10 @@ var LimeRoute = function(key, url, handler, errorHandler = null) {
   }
 }
 
-var LimeRequest = function(key, data, priority = 1) {
+var LimeRequest = function(key, data = "", options = {}) {
   this.key = key;
   this.data = data;
-  this.priority = priority;
+  this.priority = options.priority;
   this.handled = false;
   this.getKey = function() {
     return this.key;
@@ -165,9 +179,10 @@ var LimeRequest = function(key, data, priority = 1) {
   }
 }
 
-var LimeResponse = function(key, data) {
+var LimeResponse = function(key, data, request, options = {}) {
   this.key = key;
   this.data = data;
+  this.request = request;
   this.getKey = function() {
     return this.key;
   },

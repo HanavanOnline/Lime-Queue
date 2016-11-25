@@ -1,5 +1,5 @@
 function Lime(interval = 50) {
-  this.version = "v1.0.13";
+  this.version = "v1.1.0";
   this.routes = [];
   this.timer = new LimeTimer(this).init(interval);
   this.doRequest = function(key, data = "", options = {}) {

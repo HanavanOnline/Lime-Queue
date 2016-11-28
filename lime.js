@@ -157,7 +157,7 @@ var LimeRoute = function(key, url, handler, errorHandler = null, options = {}) {
           if(x == request.key)
             return !request.isHandled();
       } else {
-        return request.key == tmp
+        return request.key == tmp;
       }
     }
     return request.key == this.key && !request.isHandled();

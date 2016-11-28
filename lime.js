@@ -1,5 +1,5 @@
 function Lime(interval = 50) {
-  this.version = "v1.1.0";
+  this.version = "v1.1.1";
   this.routes = [];
   this.timer = new LimeTimer(this).init(interval);
   this.doRequest = function(key, data = "", options = {}) {
@@ -144,6 +144,22 @@ var LimeRoute = function(key, url, handler, errorHandler = null, options = {}) {
     }
   },
   this.canHandle = function(request) {
+    if(this.key instanceof Array) {
+      for(var x in this.key) {
+        if(request.key == x)
+          return !request.isHandled();
+      }
+    }
+    if(typeof this.key == "function") {
+      var tmp = this.key();
+      if(tmp instanceof Array) {
+        for(var x in tmp)
+          if(x == request.key)
+            return !request.isHandled();
+      } else {
+        return request.key == tmp;
+      }
+    }
     return request.key == this.key && !request.isHandled();
   },
   this.getKey = function() {

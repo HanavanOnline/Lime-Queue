@@ -1,5 +1,5 @@
 function Lime(interval = 50) {
-  this.version = "v1.1.2";
+  this.version = "v1.1.5";
   this.routes = [];
   this.timer = new LimeTimer(this).init(interval);
   this.doRequest = function(key, data = "", options = {}) {
@@ -15,6 +15,9 @@ function Lime(interval = 50) {
     }();
     if(options.id != undefined) {
       request.id = options.id;
+    }
+    if(options.method != undefined) {
+      request.method = options.method;
     }
     this.timer.getRequestQueue().addObject(request);
     return request;

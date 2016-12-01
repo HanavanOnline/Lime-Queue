@@ -21,7 +21,7 @@ function Lime(interval = 50) {
   }
   this.addRoute = function(route) {
     for(var x = 0; x < this.routes.length; x++) {
-      if(this.routes[x].key != route.key) {
+      if(this.routes[x].key == route.key) {
         console.log("Lime-Queue: A route was created with the same key as a previously created one.");
         console.log("Though this behavior is allowed, it is highly discouraged. Please consider having one route handling multiple tasks for the given data.");
       }

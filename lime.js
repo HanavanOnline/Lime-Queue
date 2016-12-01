@@ -144,6 +144,8 @@ var LimeRoute = function(key, url, handler, errorHandler = null, options = {}) {
             _limeErrorHandler(jqXHR, textStatus, errorThrown);
         }
       };
+      if(request.options != undefined && request.method != undefined)
+        body.method = request.method;
       if(options != undefined && options.method != undefined)
         body.method = options.method;
       $.ajax(body);

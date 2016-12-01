@@ -127,10 +127,12 @@ var LimeRoute = function(key, url, handler, errorHandler = null, options = {}) {
     if(typeof url == "function")
       url = url(request);
     if(this.canHandle(request)) {
-      $.ajax({
+      var body = {
         url: url,
         data: request.data,
         success: function(data) {
+          if(typeof data != "object")
+            data = JSON.parse(data);
           var response = new LimeResponse(request.key, data, request);
           response.id = request.id;
           _limeHandler(response);
@@ -139,7 +141,10 @@ var LimeRoute = function(key, url, handler, errorHandler = null, options = {}) {
           if(_limeErrorHandler != null)
             _limeErrorHandler(jqXHR, textStatus, errorThrown);
         }
-      });
+      };
+      if(options != undefined && options.method != undefined)
+        body.method = options.method;
+      $.ajax(body);
       request.setHandled(true);
     }
   },

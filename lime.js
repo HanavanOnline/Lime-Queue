@@ -131,8 +131,7 @@ var LimeRoute = function(key, url, handler, errorHandler = null, options = {}) {
         url: url,
         data: request.data,
         success: function(data) {
-          if(typeof data != "object")
-            data = JSON.parse(data);
+          data = $.parseJSON(data);
           var response = new LimeResponse(request.key, data, request);
           response.id = request.id;
           _limeHandler(response);

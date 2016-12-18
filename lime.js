@@ -3,6 +3,13 @@ function Lime(interval = 50) {
   this.routes = [];
   this.timer = new LimeTimer(this).init(interval);
   this.doRequest = function(key, data = "", options = {}) {
+    if(key.includes(" ")) {
+      var requests = key.split(" ");
+      for(var x = 0; x < requests.length; x++) {
+        this.doRequest(requests[x], data, options);
+      }
+      return;
+    }
     var request = new LimeRequest(key, data, options.priority);
     request.id = function() {
       var text = "";
@@ -23,6 +30,10 @@ function Lime(interval = 50) {
     return request;
   }
   this.addRoute = function(route) {
+    if(route.key.includes(" ")) {
+      console.log("Lime-Queue: Routes CANNOT have non-alphanumeric characters (besides '-' and '_') in their keys! Please modify your route key for Route with key: \"" + route.key + "\".");
+      return;
+    }
     for(var x = 0; x < this.routes.length; x++) {
       if(this.routes[x].key == route.key) {
         console.log("Lime-Queue: A route was created with the same key as a previously created one.");

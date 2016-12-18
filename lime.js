@@ -1,5 +1,20 @@
+Array.prototype.indexOf || (Array.prototype.indexOf = function(d, e) {
+    var a;
+    if (null == this) throw new TypeError('"this" is null or not defined');
+    var c = Object(this),
+        b = c.length >>> 0;
+    if (0 === b) return -1;
+    a = +e || 0;
+    Infinity === Math.abs(a) && (a = 0);
+    if (a >= b) return -1;
+    for (a = Math.max(0 <= a ? a : b - Math.abs(a), 0); a < b;) {
+        if (a in c && c[a] === d) return a;
+        a++
+    }
+    return -1
+});
 function Lime(interval = 50) {
-  this.version = "v1.1.5";
+  this.version = "v1.1.7";
   this.routes = [];
   this.timer = new LimeTimer(this).init(interval);
   this.doRequest = function(key, data = "", options = {}) {
@@ -61,7 +76,7 @@ function LimeTimer(lime) {
     if(request != undefined) {
       for(var x = 0; x < this.lime.routes.length; x++) {
         var route = this.lime.routes[x];
-        requestQueue.removeObject(0);
+        requestQueue.removeObject(request);
         if(route.canHandle(request))
           route.handle(request);
       }
@@ -96,8 +111,11 @@ function LimeTimer(lime) {
     this.addObject = function(object) {
       this.objects[this.objects.length] = object;
     },
-    this.removeObject = function(x) {
-      this.objects.splice(x, 1);
+    this.removeObject = function(e) {
+      var x = this.objects.indexOf(e);
+      if (x > -1) {
+        this.objects.splice(x, 1);
+      }
     },
     this.get = function(x) {
       return this.objects[x];
